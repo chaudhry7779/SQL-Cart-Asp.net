@@ -1,0 +1,52 @@
+
+// Default Quantity is 1, if user clicked again +1 quantity will be added to same product ID in Cart table in database.
+
+// Clicking Add to Cart button this will check if same product available in table or not, if same product available in table this will update else will create new record.
+
+Int64 PID = Convert.ToInt64(Request.QueryString["PID"]);
+            using (SqlConnection con1 = new SqlConnection(CS))
+            {
+                using (SqlCommand cmd = new SqlCommand("select * from tblCart where PID='" + PID + "'", con1))
+                {
+
+                    cmd.CommandType = CommandType.Text;
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        sda.Fill(dt);
+                        if (dt.Rows.Count > 0)
+                        {
+                            Int32 updateQty = Convert.ToInt32(dt.Rows[0][8].ToString());
+                            Int32 UserID = Convert.ToInt32(Session["USERID"].ToString());
+                            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MSdb"].ConnectionString))
+                            {
+
+                                SqlCommand cmdU = new SqlCommand("UPDATE tblCart SET Qty =@Quantity WHERE PID=@CartPID", con);
+                                cmdU.Parameters.AddWithValue("@Quantity", updateQty + 1);
+                                cmdU.Parameters.AddWithValue("@CartPID", PID);
+                                con.Open();
+                                cmdU.ExecuteNonQuery();
+                                con.Close();
+                            }
+                        }
+                        else
+                        {
+                            Int32 UserID = Convert.ToInt32(Session["USERID"].ToString());
+                            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MSdb"].ConnectionString))
+                            {
+                                string sqlQuery = "insert into tblCart values (@UID,@PID,@PName,@PPrice,@PSelPrice,@Qty)";
+                                SqlCommand myCmd = new SqlCommand(sqlQuery, con);
+                                myCmd.Parameters.AddWithValue("@UID", UserID);
+                                myCmd.Parameters.AddWithValue("@PID", Session["CartPID"].ToString());
+                                myCmd.Parameters.AddWithValue("@PName", Session["myPName"].ToString());
+                                myCmd.Parameters.AddWithValue("@PPrice", Session["myPPrice"].ToString());
+                                myCmd.Parameters.AddWithValue("@PSelPrice", Session["myPSelPrice"].ToString());
+                                myCmd.Parameters.AddWithValue("@Qty", "1");
+                                con.Open();
+                                Int64 CartID = Convert.ToInt64(myCmd.ExecuteScalar());
+                                con.Close();
+                            }
+                        }
+                    }
+                }
+            }
