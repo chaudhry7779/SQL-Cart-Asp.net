@@ -98,9 +98,9 @@ protected void rptrCartProducts_ItemCommand(object source, RepeaterCommandEventA
                             if (dt.Rows.Count > 0)
                             {
                                 Int32 myQty = Convert.ToInt32(dt.Rows[0]["Qty"].ToString());
-                                if (myQty <= 1)
+                                if (myQty <= 1) // This will check if product quantity is 1, this will prevent minus quantities ( eg. -2, -3 , -4)
                                 {
-                                    divQtyError.Visible = true;
+                                    divQtyError.Visible = true; Show error that "Quantity cannot be less than 1."
                                 }
                                 else
                                 {
