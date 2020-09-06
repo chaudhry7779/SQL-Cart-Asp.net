@@ -1,0 +1,12 @@
+create table tblCart
+(
+CartID int primary key identity(1,1),
+UID int,
+PID int,
+PName nvarchar(MAX),
+PPrice money,
+PSelPrice money,
+SubPAmount as PPrice * Qty,
+SubSAmount as PSelPrice * Qty,
+Qty int,
+)
