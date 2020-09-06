@@ -74,7 +74,7 @@ protected void rptrCartProducts_ItemCommand(object source, RepeaterCommandEventA
                                     con.Open();
                                     cmdU.ExecuteNonQuery();
                                     con.Close();
-                                    Response.Redirect("~/Cart.aspx"); //Find some other way to avoid using redirect method
+                                    BindProductCart();
                                 }
 
                             }
@@ -115,7 +115,7 @@ protected void rptrCartProducts_ItemCommand(object source, RepeaterCommandEventA
                                         con.Open();
                                         cmdU.ExecuteNonQuery();
                                         con.Close();
-                                        Response.Redirect("~/Cart.aspx"); //Find some other way to avoid using redirect method
+                                        BindProductCart();
                                     }
                                 }
                             }
@@ -133,9 +133,8 @@ protected void rptrCartProducts_ItemCommand(object source, RepeaterCommandEventA
                     con.Open();
                     cmdU.ExecuteNonQuery();
                     con.Close();
-                    //Response.Redirect("~/Cart.aspx"); //Find some other way to avoid using redirect method
-                }
-                Response.Redirect("~/Cart.aspx");
+                    BindProductCart();
+                }                
             }
         }
         
