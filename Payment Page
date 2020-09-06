@@ -1,0 +1,56 @@
+// on Payment Page load event I used BindPriceData(); to bind Price of all products which added in Cart table.
+
+
+private void BindPriceData()
+        {
+            string UserIDD = Session["USERID"].ToString();
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(CS))
+            {
+                using (SqlCommand cmd = new SqlCommand("SELECT * FROM tblCart D CROSS APPLY ( SELECT TOP 1 E.Name,Extension FROM tblProductImages E WHERE E.PID = D.PID) Name where D.UID ='" + UserIDD + "'", con))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                    {
+                        sda.Fill(dt);
+                        if (dt.Rows.Count > 0)
+                        {
+                            string Total = dt.Compute("Sum(SubSAmount)", "").ToString();
+                            string CartTotal = dt.Compute("Sum(SubPAmount)", "").ToString();
+                            string CartQuantity = dt.Compute("Sum(Qty)", "").ToString();
+                            int Total1 = Convert.ToInt32(dt.Compute("Sum(SubSAmount)", ""));
+                            int CartTotal1 = Convert.ToInt32(dt.Compute("Sum(SubPAmount)", ""));
+                            spanTotal.InnerText = "Rs. " + string.Format("{0:#,###.##}", double.Parse(Total));
+                            spanCartTotal.InnerText = "Rs. " + string.Format("{0:#,###.##}", double.Parse(CartTotal));
+                            spanDiscount.InnerText = "- Rs. " + (CartTotal1 - Total1).ToString();
+                            hdCartAmount.Value = CartTotal.ToString();
+                            hdCartDiscount.Value = (CartTotal1 - Total1).ToString();
+                            hdTotalPayed.Value = Total.ToString();
+                        }
+                        else
+                        {
+                            Response.Redirect("~/ViewProducts.aspx");
+                        }
+                    }
+                }
+            }
+        }
+        
+        
+        // To emty user Cart you can use code written below, I used this code Payment button.
+        
+        
+            Int32 CartUIDD = Convert.ToInt32(Session["USERID"].ToString());
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MSdb"].ConnectionString))
+            {
+                SqlCommand cmdU = new SqlCommand("DELETE FROM tblCart WHERE UID =@CartUID", con);
+                cmdU.Parameters.AddWithValue("@CartUID", CartUIDD);
+                con.Open();
+                cmdU.ExecuteNonQuery();
+                con.Close();
+            }
+        
+        
+        // And that's it. Hope it helps you. Thanks and remember me in your prayers... have a good time...
+        
+        
