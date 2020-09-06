@@ -1,0 +1,148 @@
+// in Cart Page load event I used BindProductCart(); to bind all records from table to repeater of logged-in user. 
+
+private void BindProductCart()
+        {
+            string UserIDD = Session["USERID"].ToString();
+            DataTable dt = new DataTable();
+            using (SqlConnection con = new SqlConnection(CS))
+            {
+                using (SqlCommand cmd = new SqlCommand("SELECT * FROM tblCart D CROSS APPLY ( SELECT TOP 1 E.Name,Extension FROM tblProductImages E WHERE E.PID = D.PID) Name where D.UID ='" + UserIDD + "'", con))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                    {
+                        sda.Fill(dt);
+                        rptrCartProducts.DataSource = dt;
+                        rptrCartProducts.DataBind();
+                        if (dt.Rows.Count > 0)
+                        {
+                            string Total = dt.Compute("Sum(SubSAmount)", "").ToString();
+                            string CartTotal = dt.Compute("Sum(SubPAmount)", "").ToString();
+                            string CartQuantity = dt.Compute("Sum(Qty)", "").ToString();
+                            h4NoItems.InnerText = "My Cart ( " + CartQuantity + " Item(s) )";
+
+                            int Total1 = Convert.ToInt32(dt.Compute("Sum(SubSAmount)", ""));
+                            int CartTotal1 = Convert.ToInt32(dt.Compute("Sum(SubPAmount)", ""));
+
+                            spanTotal.InnerText = "Rs. " + string.Format("{0:#,###.##}", double.Parse(Total)) + ".00";
+                            spanCartTotal.InnerText = "Rs. " + string.Format("{0:#,###.##}", double.Parse(CartTotal)) + ".00";
+                            spanDiscount.InnerText = "- Rs. " + (CartTotal1 - Total1).ToString();
+                        }
+                        else
+                        {
+                            h4NoItems.InnerText = "Your Shopping Cart is Empty.";
+                            divAmountSect.Visible = false;
+                        }
+                    }
+                }
+            }
+        }
+------------------------------------------------------------------------------------------------------------------------------------
+
+// in repeater I used OnItemCommand, 3 buttons ( Minus, Plus and Remove ) If user Click Minus botton quantity will subtract 1, if clicked Plus button quantity will be added +1 and 
+  if user click on Remove button product will be deleted from Cart table.
+  
+
+protected void rptrCartProducts_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+
+            //This will add +1 to current quantity using PID
+            if (e.CommandName == "DoPlus")
+            {
+                string PID = (e.CommandArgument.ToString());
+                using (SqlConnection con1 = new SqlConnection(CS))
+                {
+                    using (SqlCommand cmd = new SqlCommand("select * from tblCart where PID='" + PID + "'", con1))
+                    {
+
+                        cmd.CommandType = CommandType.Text;
+                        using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            sda.Fill(dt);
+                            if (dt.Rows.Count > 0)
+                            {
+
+                                Int32 updateQty = Convert.ToInt32(dt.Rows[0][8].ToString());
+                                Int32 UserID = Convert.ToInt32(Session["USERID"].ToString());
+                                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MSdb"].ConnectionString))
+                                {
+
+                                    SqlCommand cmdU = new SqlCommand("UPDATE tblCart SET Qty =@Quantity WHERE PID=@CartPID", con);
+                                    cmdU.Parameters.AddWithValue("@Quantity", updateQty + 1);
+                                    cmdU.Parameters.AddWithValue("@CartPID", PID);
+                                    con.Open();
+                                    cmdU.ExecuteNonQuery();
+                                    con.Close();
+                                    Response.Redirect("~/Cart.aspx");
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            else if (e.CommandName == "DoMinus")
+            {
+                string PID = (e.CommandArgument.ToString());
+                using (SqlConnection con1 = new SqlConnection(CS))
+                {
+                    using (SqlCommand cmd = new SqlCommand("select * from tblCart where PID='" + PID + "'", con1))
+                    {
+
+                        cmd.CommandType = CommandType.Text;
+                        using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            sda.Fill(dt);
+                            if (dt.Rows.Count > 0)
+                            {
+                                Int32 myQty = Convert.ToInt32(dt.Rows[0]["Qty"].ToString());
+                                if (myQty <= 1)
+                                {
+                                    divQtyError.Visible = true;
+                                }
+                                else
+                                {
+                                    Int32 updateQty = Convert.ToInt32(dt.Rows[0][8].ToString());
+                                    Int32 UserID = Convert.ToInt32(Session["USERID"].ToString());
+                                    using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MSdb"].ConnectionString))
+                                    {
+
+                                        SqlCommand cmdU = new SqlCommand("UPDATE tblCart SET Qty =@Quantity WHERE PID=@CartPID", con);
+                                        cmdU.Parameters.AddWithValue("@Quantity", updateQty - 1);
+                                        cmdU.Parameters.AddWithValue("@CartPID", PID);
+                                        con.Open();
+                                        cmdU.ExecuteNonQuery();
+                                        con.Close();
+                                        Response.Redirect("~/Cart.aspx");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (e.CommandName == "RemoveThisCart")
+            {
+                int CartPID = Convert.ToInt32(e.CommandArgument.ToString().Trim());
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MSdb"].ConnectionString))
+                {
+                    SqlCommand cmdU = new SqlCommand("DELETE FROM tblCart WHERE PID =@CartPID", con);
+                    cmdU.Parameters.AddWithValue("@CartPID", CartPID);
+                    con.Open();
+                    cmdU.ExecuteNonQuery();
+                    con.Close();
+                    //Response.Redirect("~/Cart.aspx"); //Find some other way to avoid using redirect method
+                }
+                Response.Redirect("~/Cart.aspx");
+            }
+        }
+        
+        
+        
+        
+        
+       
+
+      
