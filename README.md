@@ -1,4 +1,4 @@
-# SQL-Cart-Asp.net
+# SQL-Shopping-Cart-Asp.net
 Login based Shopping Cart using SQL.
 
 
