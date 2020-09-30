@@ -19,3 +19,4 @@ Big shout-out to Balram Yadav ( Coder Baba ). He's an inspiration for me, I have
 Extra:
       **. We can use Ajax Toolkit and UpdatePanel to avoid unwanted postbacks while Adding, increasing, decreasing or removing cart items, ToolkitScriptManager and UpdatePanel should be placed on ProductView.apsx and Cart.aspx Pages for great user experience.
 
+**. Soon I will create full cart project based on this code..
