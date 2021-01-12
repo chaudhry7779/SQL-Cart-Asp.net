@@ -2,6 +2,8 @@
 Login based Shopping Cart using SQL.
 
 
+If you faced any issue, don't hesitate to contact me on WhatsApp: +92 300 1888193
+
 Hello, 
 
 Big shout-out to Balram Yadav ( Coder Baba ). He's an inspiration for me, I have learned so much from his videos, basically I learned web designing from his video playlist ( https://www.youtube.com/watch?v=FuyRWWVx9Ig ) I had some basic knowledge of HTML and little bit of C#, I followed his all parts of ( E-Shopping ASP.NET Website ) and now I have good knowledge of C# and SQL. Again big love and respect for Coder Baba.
@@ -19,4 +21,4 @@ Big shout-out to Balram Yadav ( Coder Baba ). He's an inspiration for me, I have
 Extra:
       **. We can use Ajax Toolkit and UpdatePanel to avoid unwanted postbacks while Adding, increasing, decreasing or removing cart items, ToolkitScriptManager and UpdatePanel should be placed on ProductView.apsx and Cart.aspx Pages for great user experience.
 
-**. Soon I will create full cart project based on this code..
+**. Complete Solution added, Enjoy and learn more...
