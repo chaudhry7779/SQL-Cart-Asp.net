@@ -1,0 +1,19 @@
+protected void btnLogin_Click(object sender, EventArgs e)
+    {
+        using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyShoppingDB"].ConnectionString))
+        {
+            con.Open();
+            SqlCommand cmd = new SqlCommand("Select * from tblUsers where Username=@username and Password=@pwd", con);
+            cmd.Parameters.AddWithValue("@username",txtUsername .Text );
+
+            cmd.Parameters.AddWithValue("@pwd", txtPass .Text);
+            SqlDataAdapter sda = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            sda.Fill(dt);
+            if (dt.Rows.Count != 0)
+            {
+            
+            Session["USERID"] = dt.Rows[0]["uid"].ToString(); // Make Sure to add this line in your code, else you will face issue,
+            
+                if(CheckBox1 .Checked)
+                {
